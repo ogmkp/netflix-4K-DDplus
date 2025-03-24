@@ -5,9 +5,6 @@ let getElementByXPath = function (xpath) {
 };
 
 let fn = function () {
-	const VIDEO_SELECT = getElementByXPath("//div[text()='Video Bitrate / VMAF']");
-	const AUDIO_SELECT = getElementByXPath("//div[text()='Audio Bitrate']");
-	const BUTTON = getElementByXPath("//button[text()='Override']");
 
 	const videoPlayer = netflix.appContext.state.playerApp.getAPI().videoPlayer;
 	if(!videoPlayer) {
@@ -24,6 +21,10 @@ let fn = function () {
 		return false;
 	}
 
+	const VIDEO_SELECT = getElementByXPath("//div[text()='Video Bitrate / VMAF']");
+	const AUDIO_SELECT = getElementByXPath("//div[text()='Audio Bitrate']");
+	const BUTTON = getElementByXPath("//button[text()='Override']");
+
 	window.dispatchEvent(new KeyboardEvent('keydown', {
 		keyCode: 66,
 		ctrlKey: true,
@@ -31,24 +32,36 @@ let fn = function () {
 		shiftKey: true,
 	}));
 
-	if (!(VIDEO_SELECT && AUDIO_SELECT && BUTTON)){
+	if (!(VIDEO_SELECT && AUDIO_SELECT && BUTTON)) {
+		console.log("One or more elements not found!");
 		return false;
 	}
 
-	[VIDEO_SELECT, AUDIO_SELECT].forEach(function (el) {
-		let parent = el.parentElement;
+    for (let el of [VIDEO_SELECT, AUDIO_SELECT]) {
+        let parent = el.parentElement;
+        if (!parent) {
+            console.log("Parent element not found for", el);
+            return false;
+        }
 
-		let options = parent.querySelectorAll('select > option');
+        let options = parent.querySelectorAll('select > option');
 
-		for (var i = 0; i < options.length - 1; i++) {
-			options[i].removeAttribute('selected');
-		}
+        let allOptionsEmpty = Array.from(options).every(option => option.textContent.trim() === "");
+        if (allOptionsEmpty) {
+            console.log("All options are empty!");
+            return false;
+        }
 
-		options[options.length - 1].setAttribute('selected', 'selected');
-	});
+        options.forEach(option => option.removeAttribute('selected'));
+        options[options.length - 1].setAttribute('selected', 'selected');
+        
+        console.log("All Done!");
+    }
 
 	console.log("Video Playing!");
-	BUTTON.click();
+    setTimeout(() => {
+        BUTTON.click();
+    }, 1000);
 
 	return true;
 };

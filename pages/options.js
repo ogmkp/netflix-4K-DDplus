@@ -56,7 +56,8 @@ function save_options() {
             });
         }
 
-        window.open("about:blank", "_self").close();
+        //window.open("about:blank", "_self").close();
+        window.close();
     });
 }
 
