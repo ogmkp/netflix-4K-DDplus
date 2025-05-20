@@ -32,7 +32,7 @@ Read more: https://help.netflix.com/node/30081
   
 **Other OS And Browser(Includes portable edge)**  
 1, HE-AAC Audio 5.1 (lower than DDplus)   
-2, AV1, VP9, AVC, and AVChigh, can be selected   
+2, AV1, AVC, and AVChigh, can be selected   
   
   
     
