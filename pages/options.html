@@ -54,11 +54,16 @@
 					<input type="radio" id="usevp9" name="contact" value="usevp9" style="display: none;">
 					<label for="usevp9" style="display: none;">Play with VP9</label>
 				</div>
-				<div>
-					<input type="radio" id="useAVC" name="contact" value="useAVC">
-					<label for="useAVC">Play with AVC</label>
+				<div style="display: flex">
+					<div>
+						<input type="radio" id="useAVC" name="contact" value="useAVC">
+						<label for="useAVC">Play with AVC</label>
+					</div>
+					<div  style="margin-left: 10px;">
+						<input type="checkbox" id="useprk" name="useprk">
+						<label for="useprk">Use 'prk'</label>
+					</div>
 				</div>
-				<div>
 					<input type="radio" id="useAVCH" name="contact" value="useAVCH">
 					<label for="useAVCH">Play with AVC-High</label>
 				</div>
@@ -96,8 +101,7 @@
 		</fieldset>
 	</form>
 	<div>		
-		<input type="checkbox" id="useprk" name="useprk">
-		<label for="useprk">Use 'prk' config for AVC</label>
+
 	</div>	
 	<div>		
 		<input type="checkbox" id="useallSub" name="useallSub">

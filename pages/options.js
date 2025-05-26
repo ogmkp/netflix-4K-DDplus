@@ -28,18 +28,19 @@ function updateRelatedCheckboxes(checkboxId) {
     } else if (checkboxId === 'closeimsc') {
         const closeimscCheckbox = getCheckbox('closeimsc');
         updateCheckboxState(getCheckbox('closeimsc'), getCheckbox('useimscn'), true);
-        //const imageSubFieldset = document.getElementById('imageSubFieldset');
-        //imageSubFieldset.disabled = !closeimscCheckbox.checked;
     }
-    // more
+}
+
+function toggleUsePrk(isEnabled) {
+    const prkCheckbox = getCheckbox('useprk');
+    if (!prkCheckbox) return;
+
+    prkCheckbox.disabled = !isEnabled;
+    if (!isEnabled) prkCheckbox.checked = false;
 }
 
 function save_options() {
     const options = {};
-    //checkboxIds.forEach(id => {
-   //     options[id] = getCheckboxState(id);
-   // });
-
     checkboxIds.forEach((id) => {
         try {
             options[id] = getCheckboxState(id);
@@ -55,8 +56,6 @@ function save_options() {
                 chrome.tabs.reload();
             });
         }
-
-        //window.open("about:blank", "_self").close();
         window.close();
     });
 }
@@ -69,6 +68,16 @@ function restore_options() {
 
             checkbox.addEventListener('change', () => {
                 updateRelatedCheckboxes(id);
+            });
+        });
+
+        toggleUsePrk(items['useAVC']);
+
+        const radios = document.querySelectorAll('input[name="contact"]');
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                const useAVCChecked = getCheckbox('useAVC').checked;
+                toggleUsePrk(useAVCChecked);
             });
         });
 
