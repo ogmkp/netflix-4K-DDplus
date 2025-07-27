@@ -32,6 +32,7 @@
 	"web_accessible_resources": [{
         "resources": [
 			"netflix_max_bitrate.js",
+			"AutoSkip.js",
 			"cadmium-playercore.js"
         ],
 		"matches": [

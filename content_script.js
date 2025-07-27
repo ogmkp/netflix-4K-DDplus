@@ -1,7 +1,8 @@
 // From EME Logger extension
 
 urls = [
-    'netflix_max_bitrate.js'
+    'netflix_max_bitrate.js',
+    'AutoSkip.js'
 ];
 
 // promisify chrome storage API for easier chaining
@@ -40,6 +41,7 @@ async function loadScripts() {
 
 chromeStorageGet({
     setMaxBitrate: false,
+    AutoSkip: false,
     useallSub: false,
     useddplus: false,
     useAVC: false,

@@ -7,8 +7,9 @@ https://microsoftedge.microsoft.com/addons/detail/oikpkeeoofpiapmjioabikmgjeaogg
 **This extension provides the following functions**  
 1, All languages (audio and sub,if any)      
 2, Automatically select best bitrate available   
-3, Use prk config for avc   
-4, Adjust the subtitle font for the new version   
+3, Automatically Skip intro and more   
+4, Use prk config for avc   
+5, Adjust the subtitle font for the new version   
 　　Use the old style for some subtitles:   
 　　　ro zh-Hans zh-Hant ko vi ar he hi th en es   
     
