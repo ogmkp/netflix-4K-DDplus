@@ -2,7 +2,7 @@
 
 urls = [
     'netflix_max_bitrate.js',
-    'AutoSkip.js'
+    'netflix_auto_skip.js'
 ];
 
 // promisify chrome storage API for easier chaining
