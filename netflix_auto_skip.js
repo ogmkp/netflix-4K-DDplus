@@ -15,6 +15,7 @@
     function scan() {
       click('[data-uia="player-skip-intro"]');
       click('[data-uia="player-skip-recap"]');
+      click('[data-uia="player-skip-preplay"]');
       clickNext();
     }
 
