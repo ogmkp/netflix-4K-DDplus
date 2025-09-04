@@ -1,38 +1,42 @@
 (function waitForGlobalOptions() {
-  if (window.globalOptions?.AutoSkip) {
-    console.log("netflix_auto_skip.js enabled");
+    if (window.globalOptions?.AutoSkip) {
+		console.log("netflix_auto_skip.js enabled");
+        const selectors = [
+            '[data-uia="player-skip-intro"]',
+            '[data-uia="player-skip-recap"]',
+            '[data-uia="player-skip-preplay"]',
+            '[data-uia="next-episode-seamless-button"]',
+            '[data-uia="next-episode-seamless-button-draining"]'
+        ];
 
-    function click(selector) {
-      const el = document.querySelector(selector);
-      if (el && !el.disabled) el.click();
-    }
+        function click(selector) {
+            const el = document.querySelector(selector);
+            if (el && !el.disabled)
+                el.click();
+        }
 
-    function clickNext() {
-      click('[data-uia="next-episode-seamless-button"]') ||
-      click('[data-uia="next-episode-seamless-button-draining"]');
-    }
+        function scan() {
+            selectors.forEach(click);
+        }
 
-    function scan() {
-      click('[data-uia="player-skip-intro"]');
-      click('[data-uia="player-skip-recap"]');
-      click('[data-uia="player-skip-preplay"]');
-      clickNext();
-    }
+        const observer = new MutationObserver(scan);
 
-    const observer = new MutationObserver(scan);
+        function init() {
+            if (!document.body)
+                return setTimeout(init, 100);
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+            scan();
+        }
 
-    function init() {
-      if (!document.body) return;
-      observer.observe(document.body, { childList: true, subtree: true });
-      scan();
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     } else {
-      init();
+        setTimeout(waitForGlobalOptions, 100);
     }
-  } else {
-    setTimeout(waitForGlobalOptions, 100);
-  }
 })();
