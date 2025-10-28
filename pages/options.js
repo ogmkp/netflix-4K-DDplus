@@ -1,4 +1,4 @@
-const checkboxIds = ['useallSub', 'useddplus', 'useAVC', 'useFHD', 'usedef', 'useHA', 'useAVCH', 'usevp9', 'useav1', 'useprk', 'usehevc', 'usef4k', 'usef12k', 'closeimsc', 'useimscn', 'setMaxBitrate', 'AutoSkip'];
+const checkboxIds = ['useallSub', 'useddplus', 'useAVC', 'useFHD', 'usedef', 'useHA', 'useAVCH', 'usevp9', 'useav1', 'useprk', 'usehevc', 'usef4k', 'usef12k', 'closeimsc', 'useimscn', 'setMaxBitrate', 'AutoSkip', 'fkhouse'];
 
 function getCheckbox(id) {
     return document.getElementById(id);

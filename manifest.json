@@ -17,7 +17,8 @@
 		"128": "img/icon128.png"
 	},
 	"background": {
-		"service_worker": "background.js"
+		"service_worker": "background.js",
+		"type": "module"
 	},
 	"content_scripts": [{
 		"matches": [
@@ -54,12 +55,14 @@
 	"permissions": [
 		"storage",
 		"tabs",
+		"scripting",
 		"declarativeNetRequest"
 	],
 	"host_permissions": [
 		"*://assets.nflxext.com/*/ffe/player/html/*",
 		"*://www.assets.nflxext.com/*/ffe/player/html/*",
 		"*://netflix.com/*",
+		"*://web.prod.cloud.netflix.com/*",
 		"*://www.netflix.com/*"
 	]
 }

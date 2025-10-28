@@ -42,6 +42,7 @@ async function loadScripts() {
 chromeStorageGet({
     setMaxBitrate: false,
     AutoSkip: false,
+    fkhouse: false,
     useallSub: false,
     useddplus: false,
     useAVC: false,

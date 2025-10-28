@@ -8,8 +8,9 @@ https://microsoftedge.microsoft.com/addons/detail/oikpkeeoofpiapmjioabikmgjeaogg
 1, All languages (audio and sub,if any)      
 2, Automatically select best bitrate available   
 3, Automatically Skip intro and more   
-4, Use prk config for avc   
-5, Adjust the subtitle font for the new version   
+4, Skip Household Verification   
+5, Use prk config for avc   
+6, Adjust the subtitle font for the new version   
 　　Use the old style for some subtitles:   
 　　　ro zh-Hans zh-Hant ko vi ar he hi th en es   
     
@@ -34,8 +35,8 @@ Read more: https://help.netflix.com/node/30081
 **Other OS And Browser(Includes portable edge)**  
 1, HE-AAC Audio 5.1 (lower than DDplus)   
 2, AV1, AVC, and AVChigh, can be selected   
-  
-  
+    
+    
     
 ATMOS is very, very amazing  
 https://www.netflix.com/search?q=ATMOS  
