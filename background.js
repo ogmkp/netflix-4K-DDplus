@@ -17,34 +17,9 @@ chrome.tabs.onActivated.addListener(activeInfo => {
     }
   });
 });
-/*
-chrome.runtime.onInstalled.addListener(async () => {
-  try {
-    const existing = await chrome.scripting.getRegisteredContentScripts();
-    const has = existing.some(s => s.id === "netflix-graphql-blocker");
-    if (has) {
-      await chrome.scripting.unregisterContentScripts({ ids: ["netflix-graphql-blocker"] });
-    }
-
-    await chrome.scripting.registerContentScripts([{
-      id: "netflix-graphql-blocker",
-      js: ["netflix_skip_household.js"],
-      matches: ["*://web.prod.cloud.netflix.com/*"],
-      runAt: "document_start",
-      world: "MAIN",
-      allFrames: true,
-      persistAcrossSessions: true
-    }]);
-
-    console.log("[Extension] Content script registered in MAIN world @ document_start");
-  } catch (e) {
-    console.error("[Extension] registerContentScripts error:", e);
-  }
-});*/
-
 
 const CS_ID   = "netflix-graphql-blocker";
-const MATCHES = ["*://web.prod.cloud.netflix.com/*"];
+const MATCHES = ["*://*.netflix.com/*"];
 const FILES   = ["netflix_skip_household.js"];
 
 async function registerCS() {
