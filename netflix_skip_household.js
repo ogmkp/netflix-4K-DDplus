@@ -1,6 +1,9 @@
 (() => {
   'use strict';
 
+  if (window.__NetflixBlockerPatched) return;
+  window.__NetflixBlockerPatched = true;
+
   const targetUrl = "web.prod.cloud.netflix.com/graphql";
 
   function shouldBlock(json) {
@@ -11,103 +14,112 @@
     );
   }
 
-  // ---- Patch fetch ----
-  const originalFetch = window.fetch ? window.fetch.bind(window) : null;
-
+  // ---------- Patch fetch ----------
+  const originalFetch = typeof window.fetch === 'function' ? window.fetch.bind(window) : null;
   if (originalFetch) {
     window.fetch = async function(input, init) {
+      let url;
       try {
-        const url = typeof input === 'string' ? input : input?.url;
-        if (url && url.includes(targetUrl)) {
-          return originalFetch(input, init).then(async resp => {
-            try {
-              const clone = resp.clone();
-              const text = await clone.text();
-              const json = JSON.parse(text);
-              if (shouldBlock(json)) {
-                console.log("[NetflixBlocker] Blocked fetch with target field(s)");
-                return new Response("{}", {
-                  status: 200,
-                  headers: { "Content-Type": "application/json" }
-                });
-              }
-            } catch (e) {
-              // console.warn("[NetflixBlocker] Fetch intercept error:", e);
-            }
-            return resp;
-          });
+        url = typeof input === 'string' ? input : input && input.url;
+      } catch {}
+      const isTarget = url && String(url).includes(targetUrl);
+
+      const resp = await originalFetch(input, init);
+      if (!isTarget) return resp;
+
+      try {
+        const ct = resp.headers && resp.headers.get && resp.headers.get('content-type');
+        const clone = resp.clone();
+        const text = await clone.text();
+        const looksJson = (ct && ct.includes('application/json')) || (/^[\s]*[{[]/.test(text));
+        if (looksJson) {
+          const json = JSON.parse(text);
+          if (shouldBlock(json)) {
+            console.log("[NetflixBlocker] Blocked fetch with target field(s)");
+            return new Response("{}", {
+              status: 200,
+              headers: { "Content-Type": "application/json" }
+            });
+          }
         }
       } catch (e) {
-        console.warn("[NetflixBlocker] fetch wrapper error:", e);
+         console.warn("[NetflixBlocker] Fetch intercept error:", e);
       }
-      return originalFetch(input, init);
+      return resp;
     };
   } else {
     console.warn("[NetflixBlocker] window.fetch not available at injection time");
   }
 
-  // ---- Patch XMLHttpRequest ----
+
   const OriginalXHR = window.XMLHttpRequest;
-  function XHRProxy() {
-    const xhr = new OriginalXHR();
-    let requestUrl = '';
-    let overridden = false;
+  if (!OriginalXHR || !OriginalXHR.prototype) {
+    console.warn("[NetflixBlocker] XMLHttpRequest not available at injection time");
+    return;
+  }
 
-    const open = xhr.open;
-    xhr.open = function(method, url, ...args) {
-      try { requestUrl = String(url || ''); } catch { requestUrl = ''; }
-      return open.call(this, method, url, ...args);
-    };
+  const origOpen = OriginalXHR.prototype.open;
+  const origSend = OriginalXHR.prototype.send;
 
-    const send = xhr.send;
-    xhr.send = function(body) {
-      if (requestUrl && requestUrl.includes(targetUrl)) {
-        const self = this;
-        const origOnReadyStateChange = self.onreadystatechange;
+  OriginalXHR.prototype.open = function(method, url, ...args) {
+    try {
+      this.__nb_url = String(url || '');
+    } catch {
+      this.__nb_url = '';
+    }
+    return origOpen.call(this, method, url, ...args);
+  };
 
-        self.onreadystatechange = function() {
-          try {
-            if (!overridden && self.readyState === 4 && self.status === 200) {
-              let json = null;
-              try {
-                json = JSON.parse(self.responseText);
-              } catch {
-                json = null;
+  OriginalXHR.prototype.send = function(body) {
+    if (this.__nb_url && this.__nb_url.includes(targetUrl)) {
+      const self = this;
+      let overridden = false;
+
+      const origOnReady = self.onreadystatechange;
+
+      self.onreadystatechange = function() {
+        try {
+          if (!overridden && self.readyState === 4 && self.status === 200) {
+            let json = null;
+            try {
+              const respText = typeof self.responseText === 'string' ? self.responseText : '';
+              if (/^[\s]*[{[]/.test(respText)) {
+                json = JSON.parse(respText);
               }
-              if (shouldBlock(json)) {
-                console.log("[NetflixBlocker] Blocked XHR with target field(s)");
+            } catch {
+              json = null;
+            }
 
-                try {
-                  const fake = '{}';
-                  // responseText
-                  Object.defineProperty(self, 'responseText', {
-                    configurable: true,
-                    get() { return fake; }
-                  });
-                  Object.defineProperty(self, 'response', {
-                    configurable: true,
-                    get() { return fake; }
-                  });
-                  overridden = true;
-                } catch (e) {
-                  console.warn("[NetflixBlocker] defineProperty on XHR failed:", e);
-                }
+            if (shouldBlock(json)) {
+              console.log("[NetflixBlocker] Blocked XHR with target field(s)");
+              try {
+                const fake = '{}';
+                Object.defineProperty(self, 'responseText', {
+                  configurable: true,
+                  get() { return fake; }
+                });
+                Object.defineProperty(self, 'response', {
+                  configurable: true,
+                  get() { return fake; }
+                });
+                overridden = true;
+              } catch (e) {
+                console.warn("[NetflixBlocker] defineProperty on XHR failed:", e);
               }
             }
-          } catch (e) {
-            console.warn("[NetflixBlocker] XHR intercept error:", e);
           }
-          if (typeof origOnReadyStateChange === 'function') {
-            try { origOnReadyStateChange.apply(this, arguments); } catch {}
+        } catch (e) {
+          console.warn("[NetflixBlocker] XHR intercept error:", e);
+        } finally {
+          if (typeof origOnReady === 'function') {
+            try { origOnReady.apply(this, arguments); } catch {}
           }
-        };
-      }
-      return send.call(this, body);
-    };
+        }
+      };
+    }
 
-    return xhr;
-  }
-  window.XMLHttpRequest = XHRProxy;
+    return origSend.call(this, body);
+  };
 
-  console.log("[NetflixBlocker] injected in MAIN world @ document_start");
+  console.log("[NetflixBlocker] patched fetch & XHR prototypes in MAIN world @ document_start");
 })();
